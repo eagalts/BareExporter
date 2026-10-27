@@ -1,4 +1,5 @@
 .venv/
+.env
 go.mod
 go.sum
 main.go
