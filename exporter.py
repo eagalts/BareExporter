@@ -3,6 +3,7 @@ import json
 import time
 import urllib3
 import requests
+from systemd import daemon
 from prometheus_client import start_http_server, Gauge, Histogram
 
 # Отключаем предупреждения о небезопасных запросах
@@ -120,7 +121,7 @@ start_http_server(PARAM_PORT)
 
 # ==========================================================
 
-
+daemon.notify("READY=1")
 
 while True:
     # запрос
@@ -143,7 +144,7 @@ while True:
         gauge = current_redfish_status,
     )
 
-        
+    # sensors + fans
 
     redfish_sensors = run_command(
         REDFISH_AUTH["REDFISH_BASE_URL"] + "/redfish/v1/Chassis/System.Embedded.1/Thermal", 
@@ -159,6 +160,24 @@ while True:
         for i in values["Fans"]: 
             if i["Reading"] is not None:
                 current_redfish_fans_rpm.labels(fan=i["Name"]).set(i["Reading"])
+
+    # power supply 
+
+    redfish_power = run_command(
+        REDFISH_AUTH["REDFISH_BASE_URL"] + "/redfish/v1/Chassis/System.Embedded.1/Power/PowerSupplies/PSU.Slot.1", 
+        auth_creds=(REDFISH_AUTH['REDFISH_USER'], REDFISH_AUTH['REDFISH_PASSWORD']), 
+        verify_ssl=False
+    )
     
+    if (redfish_sensors[0] is not None):
+        values = json.loads(redfish_sensors[0])
+        for i in values["Temperatures"]: 
+            if i["ReadingCelsius"] is not None:
+                current_redfish_temperature_celsius.labels(sensor=i["Name"]).set(i["ReadingCelsius"])
+        for i in values["Fans"]: 
+            if i["Reading"] is not None:
+                current_redfish_fans_rpm.labels(fan=i["Name"]).set(i["Reading"])
+
+    daemon.notify(daemon.Notification.WATCHDOG)
     time.sleep(POLL_INTERVAL)
     
