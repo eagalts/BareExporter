@@ -9,7 +9,14 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # ==========================================================
 
-REDFISH_TIMEOUT_REQUEST=15
+PARAM_PORT = 9436
+PARAM_FLUSH = True
+
+# ==========================================================
+
+REDFISH_TIMEOUT_REQUEST = 15
+REDFISH_TTA_BUCKETS = [1,3,4,5,6,7,8,9,10,12,15]
+POLL_INTERVAL = 60
 
 # ==========================================================
 
@@ -26,7 +33,7 @@ def run_command(redfish_request, auth_creds, verify_ssl):
         )
         answer = redfish_answer.text
     except requests.RequestException as e:
-        print(f"[WARN] {REDFISH_AUTH['REDFISH_BASE_URL']} <{e}>")
+        print(f"[WARN] {REDFISH_AUTH['REDFISH_BASE_URL']} <{e}>", flush = PARAM_FLUSH)
     finally:
         end = time.monotonic()
 
@@ -71,7 +78,7 @@ redfish_last_poll_timestamp_seconds = Gauge(
 metrics_redfish_time_to_answer_seconds = Histogram(
     'metrics_redfish_time_to_answer_seconds', 
     'Метрика, которая показывает, за какое время ответил Redfish на запрос.',
-    buckets=[1,3,4,5,6,7,8,9,10,12,15]
+    buckets=REDFISH_TTA_BUCKETS
 )
 
 
@@ -92,8 +99,8 @@ redfish_first_request = REDFISH_AUTH["REDFISH_BASE_URL"] + "/redfish/v1/"
 
 # ==========================================================
 
-# Запуск HTTP-сервера на порту 9436
-start_http_server(9436)
+# Запуск HTTP-сервера 
+start_http_server(PARAM_PORT)
 
 # ==========================================================
 
@@ -110,5 +117,5 @@ while True:
         redfish_main[0]
     )
     
-    time.sleep(5)
+    time.sleep(POLL_INTERVAL)
     
