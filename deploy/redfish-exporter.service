@@ -1,0 +1,16 @@
+[Unit]
+Description=Redfish Prometheus Exporter
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=redfish-exporter
+EnvironmentFile=/etc/redfish-exporter/env
+ExecStart=/usr/bin/python3 /opt/redfish-exporter/exporter.py
+Restart=on-abnormal
+Type=notify
+RestartSec=15s
+WatchdogSec=180s
+
+[Install]
+WantedBy=multi-user.target
