@@ -32,6 +32,7 @@ def run_command(redfish_request, auth_creds, verify_ssl):
             verify=verify_ssl,
             timeout=REDFISH_TIMEOUT_REQUEST,
         )
+        redfish_answer.raise_for_status()
         answer = redfish_answer.text
     except requests.RequestException as e:
         print(f"[WARN] {REDFISH_AUTH['REDFISH_BASE_URL']} <{e}>", flush = PARAM_FLUSH)
