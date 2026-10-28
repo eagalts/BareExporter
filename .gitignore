@@ -3,3 +3,5 @@
 go.mod
 go.sum
 main.go
+demo_valid.sh
+demo_not_valid.sh

@@ -2,10 +2,49 @@ import os
 import time
 import urllib3
 import requests
-from prometheus_client import start_http_server, Gauge
+from prometheus_client import start_http_server, Gauge, Histogram
 
 # Отключаем предупреждения о небезопасных запросах
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+# ==========================================================
+
+REDFISH_TIMEOUT_REQUEST=15
+
+# ==========================================================
+
+def run_command(redfish_request, auth_creds, verify_ssl):
+    answer = None
+    start = time.monotonic()
+
+    try:
+        redfish_answer = requests.get(
+            redfish_request, 
+            auth=auth_creds, 
+            verify=verify_ssl,
+            timeout=REDFISH_TIMEOUT_REQUEST,
+        )
+        answer = redfish_answer.text
+    except requests.RequestException as e:
+        print(f"[WARN] {REDFISH_AUTH['REDFISH_BASE_URL']} <{e}>")
+    finally:
+        end = time.monotonic()
+
+    return (answer, float(end - start))
+
+def builder(
+    time_to_answer,
+    redfish_answer
+):
+    if (redfish_answer is not None):
+        # определить current_redfish_status
+        current_redfish_status.set(1.0 if 'RedfishVersion' in redfish_answer else 0.0)
+        metrics_redfish_time_to_answer_seconds.observe(time_to_answer)
+        redfish_last_poll_timestamp_seconds.set(time.time())
+    else:
+        current_redfish_status.set(0.0)
+    current_redfish_tta.set(time_to_answer)
+    
 
 # ==========================================================
 
@@ -14,6 +53,27 @@ REDFISH_AUTH = {
     'REDFISH_USER': os.environ.get("REDFISH_USER"),
     'REDFISH_PASSWORD': os.environ.get("REDFISH_PASSWORD")
 }
+
+# ===========================================================
+
+current_redfish_status = Gauge(
+    'current_redfish_status', 
+    'Метрика, которая показывает, доступен ли Redfish (1) или нет (0).'
+)
+current_redfish_tta = Gauge(
+    'current_redfish_tta', 
+    'Метрика, которая показывает, за какое время ответил Redfish на запрос.'
+)
+redfish_last_poll_timestamp_seconds = Gauge(
+    'redfish_last_poll_timestamp_seconds', 
+    'Метрика, которая показывает, когда пришел последний ответ от Redfish.'
+)
+metrics_redfish_time_to_answer_seconds = Histogram(
+    'metrics_redfish_time_to_answer_seconds', 
+    'Метрика, которая показывает, за какое время ответил Redfish на запрос.',
+    buckets=[1,3,4,5,6,7,8,9,10,12,15]
+)
+
 
 # ==========================================================
 
@@ -37,24 +97,18 @@ start_http_server(9436)
 
 # ==========================================================
 
-# определить current_redfish_status
-current_redfish_status = Gauge('current_redfish_status', 'Метрика, которая показывает, доступен ли Redfish (1) или нет (0).')
-
 while True:
-    try:   
-        # запрос
-        redfish_main = requests.get(
-            redfish_first_request, 
-            auth=(REDFISH_AUTH['REDFISH_USER'], REDFISH_AUTH['REDFISH_PASSWORD']), 
-            verify=False,
-            timeout=15,
-        )
-        # проверка доступности redfish (проверяет только базовую доступность)
-        if 'RedfishVersion' in redfish_main.text: current_redfish_status.set(1.0)
-        else: current_redfish_status.set(0.0)
-    except requests.RequestException as e:
-        current_redfish_status.set(0.0)
-        print(f"[WARN] {REDFISH_AUTH['REDFISH_BASE_URL']} inaccessible over the network <{e}>")
-    finally:
-        time.sleep(5)
+    # запрос
+    redfish_main = run_command(
+        redfish_first_request, 
+        auth_creds=(REDFISH_AUTH['REDFISH_USER'], REDFISH_AUTH['REDFISH_PASSWORD']), 
+        verify_ssl=False
+    )
+
+    builder(
+        redfish_main[1],
+        redfish_main[0]
+    )
+    
+    time.sleep(5)
     
