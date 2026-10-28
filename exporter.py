@@ -161,23 +161,6 @@ while True:
             if i["Reading"] is not None:
                 current_redfish_fans_rpm.labels(fan=i["Name"]).set(i["Reading"])
 
-    # power supply 
-
-    redfish_power = run_command(
-        REDFISH_AUTH["REDFISH_BASE_URL"] + "/redfish/v1/Chassis/System.Embedded.1/Power/PowerSupplies/PSU.Slot.1", 
-        auth_creds=(REDFISH_AUTH['REDFISH_USER'], REDFISH_AUTH['REDFISH_PASSWORD']), 
-        verify_ssl=False
-    )
-    
-    if (redfish_sensors[0] is not None):
-        values = json.loads(redfish_sensors[0])
-        for i in values["Temperatures"]: 
-            if i["ReadingCelsius"] is not None:
-                current_redfish_temperature_celsius.labels(sensor=i["Name"]).set(i["ReadingCelsius"])
-        for i in values["Fans"]: 
-            if i["Reading"] is not None:
-                current_redfish_fans_rpm.labels(fan=i["Name"]).set(i["Reading"])
-
     daemon.notify("WATCHDOG=1")
     time.sleep(POLL_INTERVAL)
     
