@@ -178,6 +178,6 @@ while True:
             if i["Reading"] is not None:
                 current_redfish_fans_rpm.labels(fan=i["Name"]).set(i["Reading"])
 
-    daemon.notify(daemon.Notification.WATCHDOG)
+    daemon.notify("WATCHDOG=1")
     time.sleep(POLL_INTERVAL)
     
