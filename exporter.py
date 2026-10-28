@@ -92,6 +92,11 @@ current_redfish_temperature_celsius = Gauge(
     'Метрика, которая показывает температуру.',
     ["sensor"]
 )
+current_redfish_fans_rpm = Gauge(
+    'current_redfish_fans_rpm', 
+    'Метрика, которая показывает RPM (частота вращений) вентиляторов.',
+    ["fan"]
+)
 
 # ==========================================================
 
@@ -151,7 +156,9 @@ while True:
         for i in values["Temperatures"]: 
             if i["ReadingCelsius"] is not None:
                 current_redfish_temperature_celsius.labels(sensor=i["Name"]).set(i["ReadingCelsius"])
- 
+        for i in values["Fans"]: 
+            if i["Reading"] is not None:
+                current_redfish_fans_rpm.labels(fan=i["Name"]).set(i["Reading"])
     
     time.sleep(POLL_INTERVAL)
     
