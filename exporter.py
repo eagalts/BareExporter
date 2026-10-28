@@ -1,4 +1,5 @@
 import os
+import json
 import time
 import urllib3
 import requests
@@ -41,15 +42,20 @@ def run_command(redfish_request, auth_creds, verify_ssl):
 
 def builder(
     time_to_answer,
-    redfish_answer
+    value,
+    labels = None,
+    gauge = None,
+    histogram = None,
 ):
-    if (redfish_answer is not None):
+    if (value is not None):
         # определить current_redfish_status
-        current_redfish_status.set(1.0 if 'RedfishVersion' in redfish_answer else 0.0)
+        if (gauge is not None):
+            gauge.set(value)
         metrics_redfish_time_to_answer_seconds.observe(time_to_answer)
         redfish_last_poll_timestamp_seconds.set(time.time())
     else:
-        current_redfish_status.set(0.0)
+        if (gauge is not None):
+            gauge.set(0.0)
     current_redfish_tta.set(time_to_answer)
     
 
@@ -80,7 +86,11 @@ metrics_redfish_time_to_answer_seconds = Histogram(
     'Метрика, которая показывает, за какое время ответил Redfish на запрос.',
     buckets=REDFISH_TTA_BUCKETS
 )
-
+current_redfish_temperature_celsius = Gauge(
+    'current_redfish_temperature_celsius', 
+    'Метрика, которая показывает температуру.',
+    ["sensor"]
+)
 
 # ==========================================================
 
@@ -104,6 +114,8 @@ start_http_server(PARAM_PORT)
 
 # ==========================================================
 
+
+
 while True:
     # запрос
     redfish_main = run_command(
@@ -112,10 +124,33 @@ while True:
         verify_ssl=False
     )
 
+    if redfish_main[0] is None:
+        status = None
+    elif 'RedfishVersion' in redfish_main[0]:
+        status = 1.0
+    else:
+        status = 0.0
+    
     builder(
         redfish_main[1],
-        redfish_main[0]
+        status,
+        gauge = current_redfish_status,
     )
+
+        
+
+    redfish_sensors = run_command(
+        REDFISH_AUTH["REDFISH_BASE_URL"] + "/redfish/v1/Chassis/System.Embedded.1/Thermal", 
+        auth_creds=(REDFISH_AUTH['REDFISH_USER'], REDFISH_AUTH['REDFISH_PASSWORD']), 
+        verify_ssl=False
+    )
+    
+    if (redfish_sensors[0] is not None):
+        values = json.loads(redfish_sensors[0])
+        for i in values["Temperatures"]: 
+            if i["ReadingCelsius"] is not None:
+                current_redfish_temperature_celsius.labels(sensor=i["Name"]).set(i["ReadingCelsius"])
+ 
     
     time.sleep(POLL_INTERVAL)
     
