@@ -35,6 +35,7 @@ def disk():
                     search_item = "Health",
                     label_name = "drive",
                     metric_gauge = gauges.current_redfish_drive_health,
+                    health_to_num=True,
                 )
         
                 writer(
