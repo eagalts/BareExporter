@@ -31,6 +31,7 @@ Prometheus ──GET /metrics──► exporter.py :9436
 | `current_redfish_power_health` | gauge | `psu` | `1`, если `psu`-метрика (электропитание) в норме (OK), иначе `0` (Warning/Error/Critical) |
 | `current_redfish_drive_health` | gauge | `drive` | `1`, если `health`-метрика (состояние диска) в норме (OK), иначе `0` (Warning/Error/Critical) |
 | `current_redfish_drive_failure_predict` | gauge | `drive` | `0`, если диск в норме (OK), иначе `1` (диск скоро умрет - требуется внимание к нему) |
+| `current_redfish_sel_entries` | gauge | `severity` | количество записей в SEL по серьёзности |
 
 ## Требования
 

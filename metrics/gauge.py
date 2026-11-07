@@ -37,3 +37,9 @@ current_redfish_drive_failure_predict = Gauge(
     'Метрика, которая показывает прогноз отказа дисков.',
     ["drive"]
 )
+
+current_redfish_sel_entries = Gauge(
+    'current_redfish_sel_entries', 
+    'Метрика, которая показывает число записей в SEL по серьёзности.',
+    ["severity"]
+)

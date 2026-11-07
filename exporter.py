@@ -1,4 +1,3 @@
-import json
 import time
 import urllib3
 
@@ -8,8 +7,8 @@ from prometheus_client import start_http_server
 from runners.psu import psu as psu
 from runners.thermal import thermal as thermal
 from runners.disk import disk as disk
+from runners.sel import sel as sel
 
-from core.writer import writer
 from core.builder import builder
 from core.auth import BASIC_AUTH
 from metrics import gauge as gauges
@@ -68,6 +67,7 @@ while True:
     thermal()       # температура + rpm вентиляторов
     psu()           # блоки питания
     disk()          # диски, контроллеры
+    sel()           # system event log
 
     # daemon
 
