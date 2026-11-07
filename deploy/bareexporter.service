@@ -4,9 +4,9 @@ After=network-online.target
 Wants=network-online.target
 
 [Service]
-User=redfish-exporter
-EnvironmentFile=/etc/redfish-exporter/env
-ExecStart=/usr/bin/python3 /opt/redfish-exporter/exporter.py
+User=bareexporter
+EnvironmentFile=/etc/bareexporter/env
+ExecStart=/usr/bin/python3 /opt/bareexporter/exporter.py
 Restart=on-abnormal
 Type=notify
 RestartSec=15s
