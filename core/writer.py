@@ -1,3 +1,5 @@
+from prometheus_client import Gauge
+
 def writer(values: list, search_item, label_name: str = None, metric_gauge: Gauge = None):
     if metric_gauge is not None:
         for item in values:

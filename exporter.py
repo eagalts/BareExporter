@@ -82,7 +82,7 @@ while True:
             values = values["Fans"],
             search_item = "Reading",
             label_name = "fan",
-            metric_gauge = gauges.current_redfish_temperature_celsius,
+            metric_gauge = gauges.current_redfish_fans_rpm,
         )
 
     daemon.notify("WATCHDOG=1")
