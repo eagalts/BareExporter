@@ -43,7 +43,7 @@ Prometheus ──GET /metrics──► exporter.py :9436
 На Debian, если pip не достаёт до PyPI:
 
 ```bash
-sudo apt install python3-prometheus-client python3-requests
+sudo apt install python3-prometheus-client python3-requests python3-systemd
 ```
 
 Иначе:
@@ -51,7 +51,7 @@ sudo apt install python3-prometheus-client python3-requests
 ```bash
 python3 -m venv .venv
 . .venv/bin/activate
-pip install prometheus_client requests
+pip install prometheus_client requests systemd-python
 ```
 
 ## Настройка
@@ -80,6 +80,6 @@ curl -s localhost:9436/metrics | grep redfish
 
 ## Известные ограничения
 
-- Проверка TLS отключена (`verify=False`): у iDRAC самоподписанный сертификат.
-- Интервал опроса (5 с), порт (9436) и таймаут запроса (15 с) пока заданы в коде.
+- Проверка TLS отключена (задается параметром `VERIFY_SSL`, по умолчанию `False`): у iDRAC самоподписанный сертификат.
+- Интервал опроса (60 с - `POLL_INTERVAL`), порт (9436) и таймаут запроса (15 с) пока заданы в коде.
 - Только чтение: экспортёр делает исключительно `GET`.
