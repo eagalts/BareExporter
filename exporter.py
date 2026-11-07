@@ -10,7 +10,7 @@ from core.builder import builder
 from core.auth import BASIC_AUTH
 from metrics import gauge as gauges
 from agent.runner import runner as run_command
-from parameters.param import PARAM_PORT, POLL_INTERVAL
+from parameters.param import PARAM_PORT, POLL_INTERVAL, VERIFY_SSL
 
 # ===========================================================
 
@@ -44,7 +44,7 @@ while True:
     redfish_main = run_command(
         redfish_first_request, 
         auth_creds=(BASIC_AUTH['REDFISH_USER'], BASIC_AUTH['REDFISH_PASSWORD']), 
-        verify_ssl=False
+        verify_ssl=VERIFY_SSL
     )
 
     if redfish_main[0] is None:
@@ -65,7 +65,7 @@ while True:
     redfish_sensors = run_command(
         BASIC_AUTH["REDFISH_BASE_URL"] + "/redfish/v1/Chassis/System.Embedded.1/Thermal", 
         auth_creds=(BASIC_AUTH['REDFISH_USER'], BASIC_AUTH['REDFISH_PASSWORD']), 
-        verify_ssl=False
+        verify_ssl=VERIFY_SSL
     )
     
     if (redfish_sensors[0] is not None):
@@ -85,6 +85,30 @@ while True:
             metric_gauge = gauges.current_redfish_fans_rpm,
         )
 
+    # power
+
+    redfish_power = run_command(
+        BASIC_AUTH["REDFISH_BASE_URL"] + "/redfish/v1/Chassis/System.Embedded.1/Power", 
+        auth_creds=(BASIC_AUTH['REDFISH_USER'], BASIC_AUTH['REDFISH_PASSWORD']), 
+        verify_ssl=VERIFY_SSL
+    )
+    
+    if (redfish_power[0] is not None):
+        values = json.loads(redfish_power[0])
+        power_values = []
+
+        for item in values["PowerSupplies"]:
+            power_values.append({"Name": item["Name"], "State": item["Status"]["Health"]})
+
+        writer(
+            values = power_values,
+            search_item = "State",
+            label_name = "psu",
+            metric_gauge = gauges.current_redfish_power_health,
+            health_to_num = True,
+        )
+
+    # daemon
+
     daemon.notify("WATCHDOG=1")
     time.sleep(POLL_INTERVAL)
-    

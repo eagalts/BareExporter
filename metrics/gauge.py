@@ -22,3 +22,8 @@ current_redfish_fans_rpm = Gauge(
     'Метрика, которая показывает RPM (частота вращений) вентиляторов.',
     ["fan"]
 )
+current_redfish_power_health = Gauge(
+    'current_redfish_power_health', 
+    'Метрика, которая показывает состояние блоков питания.',
+    ["psu"]
+)
