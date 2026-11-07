@@ -1,4 +1,3 @@
-import os
 import json
 import time
 import urllib3
@@ -6,9 +5,10 @@ import urllib3
 from systemd import daemon
 from prometheus_client import start_http_server
 
-from metrics import gauge as gauges
+from core.writer import writer
 from core.builder import builder
 from core.auth import BASIC_AUTH
+from metrics import gauge as gauges
 from agent.runner import runner as run_command
 from parameters.param import PARAM_PORT, POLL_INTERVAL
 
@@ -70,12 +70,20 @@ while True:
     
     if (redfish_sensors[0] is not None):
         values = json.loads(redfish_sensors[0])
-        for i in values["Temperatures"]: 
-            if i["ReadingCelsius"] is not None:
-                gauges.current_redfish_temperature_celsius.labels(sensor=i["Name"]).set(i["ReadingCelsius"])
-        for i in values["Fans"]: 
-            if i["Reading"] is not None:
-                gauges.current_redfish_fans_rpm.labels(fan=i["Name"]).set(i["Reading"])
+
+        writer(
+            values = values["Temperatures"],
+            search_item = "ReadingCelsius",
+            label_name = "sensor",
+            metric_gauge = gauges.current_redfish_temperature_celsius,
+        )
+
+        writer(
+            values = values["Fans"],
+            search_item = "Reading",
+            label_name = "fan",
+            metric_gauge = gauges.current_redfish_temperature_celsius,
+        )
 
     daemon.notify("WATCHDOG=1")
     time.sleep(POLL_INTERVAL)
