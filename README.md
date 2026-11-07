@@ -78,6 +78,45 @@ REDFISH_BASE_URL=https://<bmc> REDFISH_USER=root REDFISH_PASSWORD='...' python3 
 curl -s localhost:9436/metrics | grep redfish
 ```
 
+## Структура проекта
+
+```
+exporter.py               основной рабочий скрипт
+agent/runner.py           GET-запрос к Redfish: таймаут, ошибки > None, замер длительности
+core/
+  auth.py                 задаются адрес и учётные данные (по умолчанию - из переменных окружения)
+  builder.py              функция, которая записывает основные ключевые метрики redfish
+  writer.py               функция, которая записывает конечную метрику для экспорта
+runners/                  опрос отдельных частей железа
+  thermal.py              температуры и вентиляторы      /Chassis/.../Thermal
+  psu.py                  блоки питания                  /Chassis/.../Power
+  disk.py                 диски контроллера              /Systems/.../Storage/RAID.Integrated.1-1
+  sel.py                  журнал событий                 /Managers/iDRAC.Embedded.1/Logs/Sel
+metrics/
+  gauge.py                все gauge-метрики
+  histogram.py            все histogram-метрики
+parameters/
+  param.py                системные константные параметры
+  redfish.py              константные работы для метрик и для работы с redfish
+deploy/
+  bareexporter.service    systemd-юнит
+```
+
+Новый раннер: файл в `runners/`, метрика в `metrics/gauge.py`, функция в список `RUNNERS` в `exporter.py`.
+
+## Параметры
+
+| Параметр | Файл | По умолчанию | Что делает |
+|---|---|---|---|
+| `PARAM_PORT` | `parameters/param.py` | `9436` | порт `/metrics` |
+| `POLL_INTERVAL` | `parameters/param.py` | `60` | пауза между опросами, секунд |
+| `VERIFY_SSL` | `parameters/param.py` | `False` | проверка TLS-сертификата BMC |
+| `PARAM_FLUSH` | `parameters/param.py` | `True` | сразу отдавать логи в журнал (нужно под systemd) |
+| `REDFISH_TIMEOUT_REQUEST` | `parameters/redfish.py` | `15` | таймаут одного запроса, с |
+| `REDFISH_TTA_BUCKETS` | `parameters/redfish.py` | `1…15` | границы коробок histogram, с |
+
+Худший цикл ≈ число запросов х `REDFISH_TIMEOUT_REQUEST` + `POLL_INTERVAL` (сейчас 7 х 15 + 60 = 165 с) — `WatchdogSec` в юните должен быть больше.
+
 ## Известные ограничения
 
 - Проверка TLS отключена (задается параметром `VERIFY_SSL`, по умолчанию `False`): у iDRAC самоподписанный сертификат.

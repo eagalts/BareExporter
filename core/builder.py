@@ -5,9 +5,7 @@ from metrics import gauge as gauges
 def builder(
     time_to_answer,
     value,
-    labels = None,
     gauge = None,
-    histogram = None,
 ):
     if (value is not None):
         # определить redfish_up
