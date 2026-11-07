@@ -29,11 +29,15 @@ Prometheus ──GET /metrics──► exporter.py :9436
 | `current_redfish_temperature_celsius` | gauge | `sensor` | метрика, которая показывает температуру в градусах Цельсия |
 | `current_redfish_fans_rpm` | gauge | `fan` | метрика, которая показывает RPM (частота вращений) вентиляторов |
 | `current_redfish_power_health` | gauge | `psu` | `1`, если `psu`-метрика (электропитание) в норме (OK), иначе `0` (Warning/Error/Critical) |
+| `current_redfish_drive_health` | gauge | `drive` | `1`, если `health`-метрика (состояние диска) в норме (OK), иначе `0` (Warning/Error/Critical) |
+| `current_redfish_drive_failure_predict` | gauge | `drive` | `0`, если диск в норме (OK), иначе `1` (диск скоро умрет - требуется внимание к нему) |
 
 ## Требования
 
 - Python 3
-- `prometheus_client`, `requests`
+- `prometheus_client`
+- `requests`
+- `python3-systemd`
 
 На Debian, если pip не достаёт до PyPI:
 
