@@ -5,6 +5,9 @@ import urllib3
 from systemd import daemon
 from prometheus_client import start_http_server
 
+from runners.psu import psu as psu
+from runners.thermal import thermal as thermal
+
 from core.writer import writer
 from core.builder import builder
 from core.auth import BASIC_AUTH
@@ -60,53 +63,9 @@ while True:
         gauge = gauges.current_redfish_status,
     )
 
-    # sensors + fans
-
-    redfish_sensors = run_command(
-        BASIC_AUTH["REDFISH_BASE_URL"] + "/redfish/v1/Chassis/System.Embedded.1/Thermal", 
-        auth_creds=(BASIC_AUTH['REDFISH_USER'], BASIC_AUTH['REDFISH_PASSWORD']), 
-        verify_ssl=VERIFY_SSL
-    )
-    
-    if (redfish_sensors[0] is not None):
-        values = json.loads(redfish_sensors[0])
-
-        writer(
-            values = values["Temperatures"],
-            search_item = "ReadingCelsius",
-            label_name = "sensor",
-            metric_gauge = gauges.current_redfish_temperature_celsius,
-        )
-
-        writer(
-            values = values["Fans"],
-            search_item = "Reading",
-            label_name = "fan",
-            metric_gauge = gauges.current_redfish_fans_rpm,
-        )
-
-    # power
-
-    redfish_power = run_command(
-        BASIC_AUTH["REDFISH_BASE_URL"] + "/redfish/v1/Chassis/System.Embedded.1/Power", 
-        auth_creds=(BASIC_AUTH['REDFISH_USER'], BASIC_AUTH['REDFISH_PASSWORD']), 
-        verify_ssl=VERIFY_SSL
-    )
-    
-    if (redfish_power[0] is not None):
-        values = json.loads(redfish_power[0])
-        power_values = []
-
-        for item in values["PowerSupplies"]:
-            power_values.append({"Name": item["Name"], "State": item["Status"]["Health"]})
-
-        writer(
-            values = power_values,
-            search_item = "State",
-            label_name = "psu",
-            metric_gauge = gauges.current_redfish_power_health,
-            health_to_num = True,
-        )
+    # получение значений с датчиков
+    thermal()       # температура + rpm вентиляторов
+    psu()           # блоки питания
 
     # daemon
 
