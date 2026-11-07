@@ -22,6 +22,15 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # ===========================================================
 
+RUNNERS = [
+    thermal,    # Температура + скорость вращения вентиляторов
+    psu,        # Power Supply (энергопотребление)
+    disk,       # Состояние дисков, контроллера
+    sel,        # System Event Log
+]
+
+# ===========================================================
+
 ## Проверка, что у нас присутствуют все необходимые параметры
 
 for param, value in BASIC_AUTH.items():
@@ -63,13 +72,11 @@ while True:
         gauge = gauges.current_redfish_status,
     )
 
-    # получение значений с датчиков
-    thermal()       # температура + rpm вентиляторов
-    psu()           # блоки питания
-    disk()          # диски, контроллеры
-    sel()           # system event log
-
-    # daemon
-
+    for job in RUNNERS:
+        try:
+            job()
+        except (KeyError, TypeError, ValueError) as e:
+            print(f"[WARN] Task '{job.__name__}' failed: {e!r}", flush = True)
+        
     daemon.notify("WATCHDOG=1")
     time.sleep(POLL_INTERVAL)
