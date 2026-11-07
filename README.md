@@ -1,6 +1,6 @@
-# exporter
+# BareExporter
 
-Prometheus-экспортёр для BMC по Redfish (полигон — Dell R620, iDRAC7).
+Prometheus-экспортёр для BMC по Redfish 
 
 ## Как работает
 
@@ -25,8 +25,6 @@ Prometheus ──GET /metrics──► exporter.py :9436
 | `current_redfish_status` | gauge | — | `1`, если `/redfish/v1/` ответил и в ответе есть `RedfishVersion`, иначе `0` |
 
 Плюс стандартные `process_*` и `python_*` от `prometheus_client`.
-
-> Планируется переименование `current_redfish_status` → `redfish_up` (ломающее изменение).
 
 ## Требования
 
@@ -76,17 +74,3 @@ curl -s localhost:9436/metrics | grep redfish
 - Проверка TLS отключена (`verify=False`): у iDRAC самоподписанный сертификат.
 - Интервал опроса (5 с), порт (9436) и таймаут запроса (15 с) пока заданы в коде.
 - Только чтение: экспортёр делает исключительно `GET`.
-
-## Roadmap
-
-
-- [x] `/metrics`, фоновый HTTP-сервер
-- [x] доступность Redfish, обработка сетевых ошибок и таймаутов
-- [ ] `redfish_poll_duration_seconds`, `redfish_last_poll_timestamp_seconds`
-- [ ] температуры (`sensor`)
-- [ ] блоки питания (`psu`)
-- [ ] диски (`drive`)
-- [ ] записи SEL по `severity`
-
-Дальше по вехе 2: systemd-юнит (2.3), Prometheus/VictoriaMetrics, таймер (2.7).
-

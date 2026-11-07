@@ -6,8 +6,8 @@ import urllib3
 from systemd import daemon
 from prometheus_client import start_http_server
 
-from metrics import gauge, histogram
-from core import builder
+from metrics import gauge as gauges
+from core.builder import builder
 from core.auth import BASIC_AUTH
 from agent.runner import runner as run_command
 from parameters.param import PARAM_PORT, POLL_INTERVAL
@@ -57,7 +57,7 @@ while True:
     builder(
         redfish_main[1],
         status,
-        gauge = gauge.current_redfish_status,
+        gauge = gauges.current_redfish_status,
     )
 
     # sensors + fans
@@ -72,10 +72,10 @@ while True:
         values = json.loads(redfish_sensors[0])
         for i in values["Temperatures"]: 
             if i["ReadingCelsius"] is not None:
-                gauge.current_redfish_temperature_celsius.labels(sensor=i["Name"]).set(i["ReadingCelsius"])
+                gauges.current_redfish_temperature_celsius.labels(sensor=i["Name"]).set(i["ReadingCelsius"])
         for i in values["Fans"]: 
             if i["Reading"] is not None:
-                gauge.current_redfish_fans_rpm.labels(fan=i["Name"]).set(i["Reading"])
+                gauges.current_redfish_fans_rpm.labels(fan=i["Name"]).set(i["Reading"])
 
     daemon.notify("WATCHDOG=1")
     time.sleep(POLL_INTERVAL)
