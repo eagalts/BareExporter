@@ -30,17 +30,17 @@ def disk():
                 drive = json.loads(current_drive[0])
                 drive_values.append({"Name": drive["Name"], "Health": drive["Status"]["Health"], "FailurePredicted": drive["FailurePredicted"]})
 
-                writer(
-                    values = drive_values,
-                    search_item = "Health",
-                    label_name = "drive",
-                    metric_gauge = gauges.current_redfish_drive_health,
-                    health_to_num=True,
-                )
-        
-                writer(
-                    values = drive_values,
-                    search_item = "FailurePredicted",
-                    label_name = "drive",
-                    metric_gauge = gauges.current_redfish_drive_failure_predict,
-                )
+        writer(
+            values = drive_values,
+            search_item = "Health",
+            label_name = "drive",
+            metric_gauge = gauges.current_redfish_drive_health,
+            health_to_num=True,
+        )
+
+        writer(
+            values = drive_values,
+            search_item = "FailurePredicted",
+            label_name = "drive",
+            metric_gauge = gauges.current_redfish_drive_failure_predict,
+        )
