@@ -27,3 +27,13 @@ current_redfish_power_health = Gauge(
     'Метрика, которая показывает состояние блоков питания.',
     ["psu"]
 )
+current_redfish_drive_health = Gauge(
+    'current_redfish_drive_health', 
+    'Метрика, которая показывает здоровье дисков.',
+    ["drive"]
+)
+current_redfish_drive_failure_predict = Gauge(
+    'current_redfish_drive_failure_predict', 
+    'Метрика, которая показывает прогноз отказа дисков.',
+    ["drive"]
+)
