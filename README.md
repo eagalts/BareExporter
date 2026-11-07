@@ -23,6 +23,7 @@ Prometheus ──GET /metrics──► exporter.py :9436
 | Метрика | Тип | Labels | Описание |
 |---|---|---|---|
 | `current_redfish_status` | gauge | — | `1`, если `/redfish/v1/` ответил и в ответе есть `RedfishVersion`, иначе `0` |
+| `metrics_redfish_time_to_answer_seconds` | histogram | — | длительность ответа от redfish в секундах |
 | `current_redfish_tta` | gauge | — | метрика, которая показывает, за какое время ответил Redfish на запрос в секундах |
 | `redfish_last_poll_timestamp_seconds` | gauge | — | метрика, которая показывает, когда пришел последний ответ от Redfish |
 | `current_redfish_temperature_celsius` | gauge | `sensor` | метрика, которая показывает температуру в градусах Цельсия |
