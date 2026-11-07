@@ -20,12 +20,12 @@ def thermal():
             values = values["Temperatures"],
             search_item = "ReadingCelsius",
             label_name = "sensor",
-            metric_gauge = gauges.current_redfish_temperature_celsius,
+            metric_gauge = gauges.redfish_temperature_celsius,
         )
 
         writer(
             values = values["Fans"],
             search_item = "Reading",
             label_name = "fan",
-            metric_gauge = gauges.current_redfish_fans_rpm,
+            metric_gauge = gauges.redfish_fan_speed_rpm,
         )

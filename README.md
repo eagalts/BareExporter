@@ -22,16 +22,16 @@ Prometheus ──GET /metrics──► exporter.py :9436
 
 | Метрика | Тип | Labels | Описание |
 |---|---|---|---|
-| `current_redfish_status` | gauge | — | `1`, если `/redfish/v1/` ответил и в ответе есть `RedfishVersion`, иначе `0` |
-| `metrics_redfish_time_to_answer_seconds` | histogram | — | длительность ответа от redfish в секундах |
-| `current_redfish_tta` | gauge | — | метрика, которая показывает, за какое время ответил Redfish на запрос в секундах |
-| `redfish_last_poll_timestamp_seconds` | gauge | — | метрика, которая показывает, когда пришел последний ответ от Redfish |
-| `current_redfish_temperature_celsius` | gauge | `sensor` | метрика, которая показывает температуру в градусах Цельсия |
-| `current_redfish_fans_rpm` | gauge | `fan` | метрика, которая показывает RPM (частота вращений) вентиляторов |
-| `current_redfish_power_health` | gauge | `psu` | `1`, если `psu`-метрика (электропитание) в норме (OK), иначе `0` (Warning/Error/Critical) |
-| `current_redfish_drive_health` | gauge | `drive` | `1`, если `health`-метрика (состояние диска) в норме (OK), иначе `0` (Warning/Error/Critical) |
-| `current_redfish_drive_failure_predict` | gauge | `drive` | `0`, если диск в норме (OK), иначе `1` (диск скоро умрет - требуется внимание к нему) |
-| `current_redfish_sel_entries` | gauge | `severity` | количество записей в SEL по серьёзности |
+| `redfish_up` | gauge | — | `1`, если `/redfish/v1/` ответил и в ответе есть `RedfishVersion`, иначе `0` |
+| `redfish_poll_duration_seconds` | histogram | — | длительность ответа от redfish в секундах |
+| `redfish_last_poll_duration_seconds` | gauge | — | метрика, которая показывает, за какое время ответил Redfish на запрос в секундах |
+| `redfish_last_success_timestamp_seconds` | gauge | — | метрика, которая показывает, когда пришел последний ответ от Redfish |
+| `redfish_temperature_celsius` | gauge | `sensor` | метрика, которая показывает температуру в градусах Цельсия |
+| `redfish_fan_speed_rpm` | gauge | `fan` | метрика, которая показывает RPM (частота вращений) вентиляторов |
+| `redfish_power_health` | gauge | `psu` | `1`, если `psu`-метрика (электропитание) в норме (OK), иначе `0` (Warning/Error/Critical) |
+| `redfish_drive_health` | gauge | `drive` | `1`, если `health`-метрика (состояние диска) в норме (OK), иначе `0` (Warning/Error/Critical) |
+| `redfish_drive_failure_predict` | gauge | `drive` | `0`, если диск в норме (OK), иначе `1` (диск скоро умрет - требуется внимание к нему) |
+| `redfish_sel_entries` | gauge | `severity` | количество записей в SEL по серьёзности |
 
 ## Требования
 

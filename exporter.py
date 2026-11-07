@@ -69,7 +69,7 @@ while True:
     builder(
         redfish_main[1],
         status,
-        gauge = gauges.current_redfish_status,
+        gauge = gauges.redfish_up,
     )
 
     for job in RUNNERS:

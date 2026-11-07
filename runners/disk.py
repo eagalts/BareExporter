@@ -34,7 +34,7 @@ def disk():
             values = drive_values,
             search_item = "Health",
             label_name = "drive",
-            metric_gauge = gauges.current_redfish_drive_health,
+            metric_gauge = gauges.redfish_drive_health,
             health_to_num=True,
         )
 
@@ -42,5 +42,5 @@ def disk():
             values = drive_values,
             search_item = "FailurePredicted",
             label_name = "drive",
-            metric_gauge = gauges.current_redfish_drive_failure_predict,
+            metric_gauge = gauges.redfish_drive_failure_predict,
         )

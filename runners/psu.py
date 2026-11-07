@@ -24,6 +24,6 @@ def psu():
             values = power_values,
             search_item = "State",
             label_name = "psu",
-            metric_gauge = gauges.current_redfish_power_health,
+            metric_gauge = gauges.redfish_power_health,
             health_to_num = True,
         )

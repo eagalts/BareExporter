@@ -10,12 +10,12 @@ def builder(
     histogram = None,
 ):
     if (value is not None):
-        # определить current_redfish_status
+        # определить redfish_up
         if (gauge is not None):
             gauge.set(value)
-        histogrames.metrics_redfish_time_to_answer_seconds.observe(time_to_answer)
-        gauges.redfish_last_poll_timestamp_seconds.set(time.time())
+        histogrames.redfish_poll_duration_seconds.observe(time_to_answer)
+        gauges.redfish_last_success_timestamp_seconds.set(time.time())
     else:
         if (gauge is not None):
             gauge.set(0.0)
-    gauges.current_redfish_tta.set(time_to_answer)
+    gauges.redfish_last_poll_duration_seconds.set(time_to_answer)

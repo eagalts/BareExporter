@@ -29,5 +29,5 @@ def sel():
             values = events,
             search_item = "Count",
             label_name = "severity",
-            metric_gauge = gauges.current_redfish_sel_entries,
+            metric_gauge = gauges.redfish_sel_entries,
         )
