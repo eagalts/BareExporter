@@ -1,5 +1,6 @@
 import time
 import urllib3
+import signal, sys
 
 from systemd import daemon
 from prometheus_client import start_http_server
@@ -50,6 +51,7 @@ start_http_server(PARAM_PORT)
 # ==========================================================
 
 daemon.notify("READY=1")
+signal.signal(signal.SIGTERM, lambda signum, frame: sys.exit(0))
 
 while True:
     # запрос
