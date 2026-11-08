@@ -60,11 +60,15 @@ pip install prometheus_client requests systemd-python
 
 Через переменные окружения. Все обязательны, значений по умолчанию нет.
 
-| Переменная | Пример | Описание |
+| Переменная | Пример / default | Описание |
 |---|---|---|
 | `REDFISH_BASE_URL` | `https://10.0.40.10` | Адрес BMC со схемой `http://` или `https://` |
 | `REDFISH_USER` | `root` | Пользователь Redfish |
 | `REDFISH_PASSWORD` | — | Пароль |
+| `PARAM_PORT` | `9436` | порт `/metrics` |
+| `POLL_INTERVAL` | `60` | пауза между опросами, секунд |
+| `VERIFY_SSL` | `False` | проверка TLS-сертификата BMC |
+| `PARAM_FLUSH` | `True` | сразу отдавать логи в журнал (нужно под systemd) |
 
 Если переменная не задана или URL без схемы, экспортёр сразу завершается с `[ERROR]`.
 
@@ -110,10 +114,6 @@ deploy/
 
 | Параметр | Файл | По умолчанию | Что делает |
 |---|---|---|---|
-| `PARAM_PORT` | `parameters/param.py` | `9436` | порт `/metrics` |
-| `POLL_INTERVAL` | `parameters/param.py` | `60` | пауза между опросами, секунд |
-| `VERIFY_SSL` | `parameters/param.py` | `False` | проверка TLS-сертификата BMC |
-| `PARAM_FLUSH` | `parameters/param.py` | `True` | сразу отдавать логи в журнал (нужно под systemd) |
 | `REDFISH_TIMEOUT_REQUEST` | `parameters/redfish.py` | `15` | таймаут одного запроса, с |
 | `REDFISH_TTA_BUCKETS` | `parameters/redfish.py` | `1…15` | границы коробок histogram, с |
 
