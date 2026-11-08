@@ -38,7 +38,7 @@ for param, value in BASIC_AUTH.items():
         raise SystemExit(f"[ERROR] {param} not defined.")
 
 if not BASIC_AUTH['REDFISH_BASE_URL'].startswith(('http://', 'https://')):
-    raise SystemExit(f"[ERROR] URL must be contains 'http://' or 'https://'.")
+    raise SystemExit("[ERROR] URL must be contains 'http://' or 'https://'.")
 
 # ==========================================================
 
