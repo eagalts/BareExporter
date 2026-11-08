@@ -12,7 +12,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends libsystemd-dev 
 # Копируем файл с зависимостями в рабочий каталог образа
 COPY requirements.txt /app/requirements.txt
 # Устанавливаем зависимости
-RUN pip install --no-cache-dir --user -r requirements.txt
+RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
+
 
 # === APP ===
 # Устанавливаем базовый образ python 3.11 (slim)
@@ -27,10 +28,11 @@ LABEL maintainer="eagalts"
 LABEL description="Prometheus exporter for Dell iDRAC 7 hardware metrics over Redfish"
 # Создаем рабочий каталог в образе
 WORKDIR /app
-# Копируем результат билда в рабочую директорию
-COPY --from=builder /root/.local /root/.local
-# Указываем PATH в переменные окружения
-ENV PATH=/root/.local/bin:$PATH
+# финальная стадия: кладём их туда, где Python ищет по умолчанию
+COPY --from=builder /install /usr/local
+# системный пользователь без домашней папки и без shell
+RUN useradd --system --no-create-home --shell /usr/sbin/nologin svc-bareexporter
+USER svc-bareexporter
 # Копируем весь код в рабочую директорию
 COPY . /app
 # Объявляем порт
