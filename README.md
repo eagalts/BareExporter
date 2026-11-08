@@ -2,6 +2,8 @@
 
 Prometheus-экспортёр для BMC по Redfish 
 
+![CI](https://github.com/eagalts/BareExporter/actions/workflows/ci.yml/badge.svg)
+
 ## Как работает
 
 ```
