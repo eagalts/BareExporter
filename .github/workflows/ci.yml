@@ -52,6 +52,8 @@ jobs:
           -e REDFISH_USER=ci \
           -e REDFISH_PASSWORD=ci \
           bareexporter
+      - name: Get current user from container
+        run: docker exec app id
       - name: Smoke-test
         run: |
           sleep 5
