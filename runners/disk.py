@@ -6,6 +6,20 @@ from metrics import gauge as gauges
 from agent.runner import runner as run_command
 from parameters.param import VERIFY_SSL
 
+def parse_drive_links(values):
+    links = []
+    for item in values["Drives"]:
+        links.append(item["@odata.id"])
+    return links
+
+
+def parse_drive(values):
+    return {
+        "Name": values["Name"],
+        "Health": values["Status"]["Health"],
+        "FailurePredicted": values["FailurePredicted"],
+    }
+
 def disk():
     redfish_drives = run_command(
         BASIC_AUTH["REDFISH_BASE_URL"] + "/redfish/v1/Systems/System.Embedded.1/Storage/RAID.Integrated.1-1", 
@@ -18,8 +32,7 @@ def disk():
 
         drive_values = []
 
-        for item in values["Drives"]:
-            path = item["@odata.id"]
+        for path in parse_drive_links(values):
             current_drive = run_command(
                 BASIC_AUTH["REDFISH_BASE_URL"] + path, 
                 auth_creds=(BASIC_AUTH['REDFISH_USER'], BASIC_AUTH['REDFISH_PASSWORD']), 
@@ -28,8 +41,8 @@ def disk():
 
             if current_drive[0] is not None:
                 drive = json.loads(current_drive[0])
-                drive_values.append({"Name": drive["Name"], "Health": drive["Status"]["Health"], "FailurePredicted": drive["FailurePredicted"]})
-
+                drive_values.append(parse_drive(drive))
+                
         writer(
             values = drive_values,
             search_item = "Health",

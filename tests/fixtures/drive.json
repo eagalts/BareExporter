@@ -1,0 +1,57 @@
+{
+    "@odata.context": "/redfish/v1/$metadata#Drive.Drive",
+    "@odata.id": "/redfish/v1/Systems/System.Embedded.1/Storage/Drives/Disk.Direct.0:RAID.Integrated.1-1",
+    "@odata.type": "#Drive.v1_3_0.Drive",
+    "Actions": {
+        "#Drive.SecureErase": {
+            "target": "/redfish/v1/Systems/System.Embedded.1/Storage/Drives/Disk.Direct.0:RAID.Integrated.1-1/Actions/Drive.SecureErase"
+        }
+    },
+    "Assembly": {
+        "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Assembly"
+    },
+    "BlockSizeBytes": 512,
+    "CapableSpeedGbs": 6,
+    "CapacityBytes": 511503761408,
+    "Description": "Solid State Disk 0:0",
+    "EncryptionAbility": "None",
+    "EncryptionStatus": "Unencrypted",
+    "FailurePredicted": false,
+    "HotspareType": "None",
+    "Id": "Disk.Direct.0:RAID.Integrated.1-1",
+    "Identifiers": [
+        {
+            "DurableName": "4433221104000000",
+            "DurableNameFormat": "NAA"
+        }
+    ],
+    "Links": {
+        "Chassis": {
+            "@odata.id": "/redfish/v1/Chassis/System.Embedded.1"
+        },
+        "Volumes": [
+            {
+                "@odata.id": "/redfish/v1/Systems/System.Embedded.1/Storage/Volumes/Disk.Direct.0:RAID.Integrated.1-1"
+            }
+        ],
+        "Volumes@odata.count": 1
+    },
+    "Location": [],
+    "Manufacturer": "ATA",
+    "MediaType": "SSD",
+    "Model": "SOME SOLID STATE DISK",
+    "Name": "Solid State Disk 0:0",
+    "NegotiatedSpeedGbs": 6,
+    "Operations": [],
+    "PartNumber": "",
+    "PredictedMediaLifeLeftPercent": null,
+    "Protocol": "SATA",
+    "Revision": "H000000X",
+    "RotationSpeedRPM": 1,
+    "SerialNumber": "XXXXXXXXXXXX",
+    "Status": {
+        "Health": "OK",
+        "HealthRollup": "OK",
+        "State": "Enabled"
+    }
+}
